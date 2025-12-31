@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { hashPassword, verifyPassword } from './auth.service.js';
+import { saveUserProfile } from '../users/users.service.js';
 
 interface UserRecord {
   id: string;
@@ -36,7 +37,15 @@ export async function authRoutes(app: FastifyInstance) {
       role: 'player'
     };
 
+    // Guardamos credenciales (Auth)
     users.set(username, user);
+
+    // 🔑 Guardamos perfil (Users module)
+    saveUserProfile({
+      id: user.id,
+      username: user.username,
+      role: user.role
+    });
 
     const token = app.jwt.sign({
       id: user.id,
